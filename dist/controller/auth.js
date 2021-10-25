@@ -13,24 +13,30 @@ async function loginPage(req, res) {
     if (error)
         return res.status(400).send(error.details[0].message);
     let regUser = await registration_1.default.findOne({ email: req.body.email });
-    console.log(regUser);
+    //console.log(regUser);
     if (!regUser)
         return res.status(400).send("Invalid Email or Password");
     const validPassword = await bcryptjs_1.default.compare(req.body.password, regUser.password);
-    console.log(validPassword);
+    //console.log(validPassword);
     if (!validPassword)
         return res.status(400).send("Password do not match");
     const token = await regUser.generateAuthToken();
     res.cookie("jwt", token);
-    return res.redirect("/todos");
+    return res.status(200).send("You Have Been Login and Authenticated Successfully");
 }
 exports.loginPage = loginPage;
 // TO LOGOUT USER
 async function logOut(req, res) {
     try {
-        req.regUser.tokens = [];
-        await req.regUser.save();
-        res.send("userlogged out successfully");
+        let regUser = await registration_1.default.findOne({ email: req.body.email });
+        regUser.tokens = [];
+        regUser.token = [];
+        //console.log(regUser)
+        await regUser.save();
+        res.cookie("jwt", "invalid");
+        console.log(regUser);
+        //console.log(req.regUser.tokens)
+        res.send("You Have Been logged out successfully");
     }
     catch (e) {
         res.status(500).send("try again");

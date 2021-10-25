@@ -1,4 +1,3 @@
-
 import Joi from "joi"
 
 const regSchema = Joi.object({

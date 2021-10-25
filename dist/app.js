@@ -12,8 +12,10 @@ const index_1 = __importDefault(require("./routes/index"));
 const users_1 = __importDefault(require("./routes/users"));
 const express_graphql_1 = require("express-graphql");
 const config_1 = __importDefault(require("config"));
+const auth_1 = __importDefault(require("./middleware/auth"));
+const registration_1 = __importDefault(require("./routes/registration"));
 const schema_1 = __importDefault(require("./models/schema"));
-const auth_1 = __importDefault(require("./routes/auth"));
+const auth_2 = __importDefault(require("./routes/auth"));
 if (!config_1.default.get("jwtPrivateKey")) {
     console.error("FATAL ERROR: jwtPrivateKey is not defined.");
     process.exit(1);
@@ -33,9 +35,10 @@ app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.static(path_1.default.join(__dirname, "..", "public")));
 app.use("/", index_1.default);
 app.use("/users", users_1.default);
-app.use('/', index_1.default);
-app.use("/user/auth", auth_1.default);
-app.use("/graphql", (0, express_graphql_1.graphqlHTTP)({
+app.use("/", index_1.default);
+app.use("/user", registration_1.default);
+app.use("/user/auth", auth_2.default);
+app.use("/graphql", auth_1.default, (0, express_graphql_1.graphqlHTTP)({
     schema: schema_1.default,
     graphiql: true,
 }));

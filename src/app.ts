@@ -7,8 +7,11 @@ import indexRouter from "./routes/index";
 import usersRouter from "./routes/users";
 import { graphqlHTTP } from "express-graphql";
 import config from "config";
+import auth from "./middleware/auth";
+import registrationRouter from "./routes/registration";
 import schema from "./models/schema";
-import authRouter from "./routes/auth"
+import authRouter from "./routes/auth";
+
 
 if (!config.get("jwtPrivateKey")) {
   console.error("FATAL ERROR: jwtPrivateKey is not defined.");
@@ -33,10 +36,12 @@ app.use(express.static(path.join(__dirname, "..", "public")));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
-app.use('/', indexRouter);
+app.use("/", indexRouter);
+app.use("/user", registrationRouter);
 app.use("/user/auth", authRouter);
 app.use(
   "/graphql",
+  auth,
   graphqlHTTP({
     schema,
     graphiql: true,
